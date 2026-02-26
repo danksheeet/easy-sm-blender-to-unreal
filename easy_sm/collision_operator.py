@@ -31,7 +31,11 @@ class UE_COLLISION_OT_Generate(bpy.types.Operator):
                 col_mesh = bpy.data.meshes.new(temp_col_name)
                 col_obj = bpy.data.objects.new(temp_col_name, col_mesh)
                 
-                context.collection.objects.link(col_obj)
+                if obj.users_collection:
+                    for coll in obj.users_collection:
+                        coll.objects.link(col_obj)
+                else:
+                    context.collection.objects.link(col_obj)
 
                 col_obj.matrix_world = obj.matrix_world
                 
@@ -149,7 +153,12 @@ class UE_COLLISION_OT_Generate(bpy.types.Operator):
 
                     part_col_mesh = bpy.data.meshes.new(part_col_name)
                     part_col_obj = bpy.data.objects.new(part_col_name, part_col_mesh)
-                    context.collection.objects.link(part_col_obj)
+                    
+                    if obj.users_collection:
+                        for coll in obj.users_collection:
+                            coll.objects.link(part_col_obj)
+                    else:
+                        context.collection.objects.link(part_col_obj)
                     part_col_obj.parent = obj
                     part_col_obj.matrix_parent_inverse = obj.matrix_world.inverted()
                     part_col_obj.matrix_world = obj.matrix_world

@@ -44,7 +44,11 @@ class UE_LOD_OT_Generate(bpy.types.Operator):
                     lod_obj.data = lod_data
                     lod_obj.name = lod_name
                     
-                    context.collection.objects.link(lod_obj)
+                    if obj.users_collection:
+                        for coll in obj.users_collection:
+                            coll.objects.link(lod_obj)
+                    else:
+                        context.collection.objects.link(lod_obj)
                     
                     lod_obj.parent = obj
                     lod_obj.matrix_parent_inverse = obj.matrix_world.inverted()
