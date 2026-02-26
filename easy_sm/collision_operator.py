@@ -18,31 +18,23 @@ class UE_COLLISION_OT_Generate(bpy.types.Operator):
 
         generated_count = 0
 
-        # Save current active object to restore later
         original_active = context.view_layer.objects.active
 
 
 
         for obj in selected_objs:
             if obj.type == 'MESH':
-                # Determine base name for collision naming
                 base_name = obj.name
                 
-                # Create a temporary container to extract the evaluated mesh
                 temp_col_name = f"TEMP_{prefix}_{base_name}"
 
                 col_mesh = bpy.data.meshes.new(temp_col_name)
                 col_obj = bpy.data.objects.new(temp_col_name, col_mesh)
                 
-                # Link newly created collision object to the active collection
                 context.collection.objects.link(col_obj)
 
-
-
-                # Set transform to match original
                 col_obj.matrix_world = obj.matrix_world
                 
-                # We need to evaluate modifiers (like subdivisions) if they exist, to get accurate bounds
                 depsgraph = context.evaluated_depsgraph_get()
                 eval_obj = obj.evaluated_get(depsgraph)
                 eval_mesh = eval_obj.to_mesh()
@@ -51,21 +43,17 @@ class UE_COLLISION_OT_Generate(bpy.types.Operator):
                 bm.from_mesh(eval_mesh)
 
                 if scene.ue_col_separate_parts:
-                    # Separate bm into disconnected components (islands)
-                    # Create face maps for islands
                     islands = []
                     faces_left = set(bm.faces)
                     
                     while faces_left:
                         island = set()
-                        # start with a random face
                         f = faces_left.pop()
                         island.add(f)
                         
                         queue = [f]
                         while queue:
                             current_f = queue.pop(0)
-                            # check connected faces through edges
                             for e in current_f.edges:
                                 for linked_f in e.link_faces:
                                     if linked_f in faces_left:
@@ -84,7 +72,6 @@ class UE_COLLISION_OT_Generate(bpy.types.Operator):
                         
                     bm_part = bmesh.new()
                     
-                    # For UCX we just need vertices
                     verts_set = set()
                     for f in island:
                         for v in f.verts:
@@ -100,7 +87,6 @@ class UE_COLLISION_OT_Generate(bpy.types.Operator):
                         if len(bm_part.verts) >= 4:
                             ret = bmesh.ops.convex_hull(bm_part, input=bm_part.verts)
                             
-                            # Clean up unused and interior points that were left floating
                             del_geom = ret.get("geom_unused", []) + ret.get("geom_interior", [])
                             del_verts = list({ele for ele in del_geom if isinstance(ele, bmesh.types.BMVert)})
                             if del_verts:
@@ -154,9 +140,7 @@ class UE_COLLISION_OT_Generate(bpy.types.Operator):
                                     
                         bmesh.ops.translate(bm_part, vec=(cx, cy, cz), verts=bm_part.verts)
 
-                    # Create object for this part
                     if scene.ue_col_separate_parts:
-                        # enumerate parts if separated
                         part_col_name = f"{prefix}_{base_name}_{part_idx:02d}"
                     elif scene.ue_col_suffix:
                         part_col_name = f"{prefix}_{base_name}_01"
@@ -190,11 +174,9 @@ class UE_COLLISION_OT_Generate(bpy.types.Operator):
                 bm.free()
                 eval_obj.to_mesh_clear()
                 
-                # Cleanup the originally created empty col_obj since we recreate them in the loop
                 bpy.data.objects.remove(col_obj, do_unlink=True)
                 bpy.data.meshes.remove(col_mesh, do_unlink=True)
 
-        # Restore original selection
         bpy.ops.object.select_all(action='DESELECT')
         for obj in selected_objs:
             obj.select_set(True)

@@ -83,7 +83,6 @@ def register():
         default=True
     )
     
-    # Collision Generator Properties
     bpy.types.Scene.ue_col_prefix = bpy.props.EnumProperty(
         name="Collision Type",
         description="Prefix used for UE collision type",
@@ -117,7 +116,6 @@ def register():
         subtype='FACTOR'
     )
     
-    # LOD Generator Properties
     bpy.types.Scene.ue_lod_count = bpy.props.IntProperty(
         name="LOD Count",
         description="Number of LODs to generate (e.g. 2 means creating LOD1 and LOD2)",

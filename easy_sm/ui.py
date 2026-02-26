@@ -1,7 +1,6 @@
 import bpy
 
 class UE_EXPORT_PT_Panel(bpy.types.Panel):
-    """Creates a Panel in the 3D Viewport sidebar"""
     bl_label = "Easy SM Export"
     bl_idname = "UE_EXPORT_PT_Panel"
     bl_space_type = 'VIEW_3D'
@@ -13,7 +12,6 @@ class UE_EXPORT_PT_Panel(bpy.types.Panel):
         layout = self.layout
         scene = context.scene
 
-        # Export Path Box
         box = layout.box()
         box.label(text="Export Settings:", icon='FILE_FOLDER')
         row = box.row()
@@ -21,7 +19,6 @@ class UE_EXPORT_PT_Panel(bpy.types.Panel):
         
         layout.separator()
         
-        # Actions Box
         box = layout.box()
         box.label(text="Actions:", icon='MODIFIER')
         
@@ -34,13 +31,11 @@ class UE_EXPORT_PT_Panel(bpy.types.Panel):
 
         layout.separator()
 
-        # Big Export Button
         row = layout.row()
         row.scale_y = 1.5
         row.operator("export_scene.ue_batch", text="Export Selected to UE", icon='EXPORT')
 
 class UE_COLLISION_PT_Panel(bpy.types.Panel):
-    """Creates a Panel in the 3D Viewport sidebar"""
     bl_label = "Easy SM Collision"
     bl_idname = "UE_COLLISION_PT_Panel"
     bl_space_type = 'VIEW_3D'
@@ -71,7 +66,6 @@ class UE_COLLISION_PT_Panel(bpy.types.Panel):
         row.operator("object.ue_generate_collisions", text="Generate Collisions", icon='MESH_CUBE')
 
 class UE_LOD_PT_Panel(bpy.types.Panel):
-    """Creates a LOD Panel in the 3D Viewport sidebar"""
     bl_label = "Easy SM LOD Generator"
     bl_idname = "UE_LOD_PT_Panel"
     bl_space_type = 'VIEW_3D'

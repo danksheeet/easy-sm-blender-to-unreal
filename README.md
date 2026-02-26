@@ -7,6 +7,7 @@
 ### 1. Export Settings
 - **Batch Export**: Export multiple selected objects simultaneously. Each object is exported as an individual `.fbx` file.
 - **Custom Export Path**: Define a specific directory for your `.fbx` exports. Defaults to `//UE_Export/` relative to your `.blend` file.
+- **Add SM_ Prefix**: Automatically prepends `SM_` to the selected mesh, its LODs, and its collisions when enabled.
 - **Apply Transforms**: Automatically applies Location, Rotation, and Scale before exporting to ensure 1.0 scale and 0.0 rotation in Unreal Engine.
 - **Center to Origin**: Temporarily moves the object to the world origin `(0, 0, 0)` during export. This guarantees that the pivot point in Unreal Engine matches the object's origin in Blender.
 - **Export Textures**: Automatically extracts and packages your material image textures into a `Textures` subfolder next to your exported FBX files.
@@ -44,6 +45,3 @@ Once installed, open the right sidebar in the 3D Viewport by pressing **`N`**. Y
 2. **Setup Collisions & LODs**: Use the *Collision Generator* and *LOD Generator* panels to automatically create collisions and LOD groups for your selected objects if needed.
 3. **Configure Settings**: Open the export panel and adjust settings like the export directory and whether to apply transforms.
 4. **Export**: Click the large **Export Selected to UE** button. Each selected main object will be processed and exported as a properly formatted `.fbx` file, ready to be dropped into Unreal Engine.
-
-## Best Practices
-- **Pivot Point Management**: Ensure your object's origin (Pivot Point) is where you want it in Unreal Engine (typically the bottom-center of the object). If you use the **Center to Origin** option, your object doesn't need to be at world zero in Blender, but its origin will become the 0,0,0 pivot in UE.

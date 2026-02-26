@@ -18,17 +18,14 @@ class UE_LOD_OT_Generate(bpy.types.Operator):
 
         generated_count = 0
 
-        # Save current active object
         original_active = context.view_layer.objects.active
 
 
 
         for obj in selected_objs:
             if obj.type == 'MESH':
-                # Determine base name for LOD naming
                 base_name = obj.name
 
-                # Remove existing LOD children to prevent duplicates on repeated calls
                 existing_lods = [child for child in obj.children
                                  if child.type == 'MESH' and "_LOD" in child.name]
                 for old_lod in existing_lods:
@@ -41,21 +38,17 @@ class UE_LOD_OT_Generate(bpy.types.Operator):
                     current_ratio *= lod_step
                     lod_name = f"{base_name}_LOD{i}"
                     
-                    # Create copy
                     lod_data = obj.data.copy()
                     lod_data.name = f"{lod_name}_Mesh"
                     lod_obj = obj.copy()
                     lod_obj.data = lod_data
                     lod_obj.name = lod_name
                     
-                    # Link to active collection
                     context.collection.objects.link(lod_obj)
                     
-                    # Parent to original mesh
                     lod_obj.parent = obj
                     lod_obj.matrix_parent_inverse = obj.matrix_world.inverted()
                     
-                    # Add decimate modifier
                     bpy.ops.object.select_all(action='DESELECT')
                     lod_obj.select_set(True)
                     context.view_layer.objects.active = lod_obj
@@ -63,12 +56,10 @@ class UE_LOD_OT_Generate(bpy.types.Operator):
                     mod = lod_obj.modifiers.new(name=f"Decimate_LOD{i}", type='DECIMATE')
                     mod.ratio = current_ratio
                     
-                    # Optional: apply the modifier (Unreal might prefer raw mesh data rather than relying on modifiers in some export paths)
                     bpy.ops.object.modifier_apply(modifier=f"Decimate_LOD{i}")
                     
                     generated_count += 1
 
-        # Restore original selection
         bpy.ops.object.select_all(action='DESELECT')
         for obj in selected_objs:
             obj.select_set(True)
