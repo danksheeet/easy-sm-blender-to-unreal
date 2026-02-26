@@ -32,9 +32,9 @@ Easily generate Level of Detail (LOD) variations for your meshes to optimize gam
 
 ## Installation
 
-1. Download the `easy_sm` folder or as a `.zip` archive.
+1. Archive the `easy_sm` folder into a `.zip` file (e.g., `easy_sm.zip`).
 2. In Blender, go to `Edit` -> `Preferences` -> `Add-ons`.
-3. Click `Install...` and select the `easy_sm.zip` file (or the `.py` script if single file).
+3. Click `Install...` and select your `easy_sm.zip` file (or simply drag and drop the `.zip` archive directly into the Blender window).
 4. Check the box next to **"Import-Export: Easy SM"** to enable the addon.
 
 ## How to Use
