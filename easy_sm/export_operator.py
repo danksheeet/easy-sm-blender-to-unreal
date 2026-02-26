@@ -36,6 +36,27 @@ class UE_EXPORT_OT_Batch(bpy.types.Operator):
         # Process each selected object one by one
         for obj in selected_objs:
             if obj.type == 'MESH':
+                # Check and add SM_ prefix if enabled and missing
+                base_name = obj.name
+                has_sm = base_name.startswith("SM_")
+                
+                if scene.ue_add_sm_prefix and not has_sm and not base_name.startswith("SK_"):
+                    new_base_name = "SM_" + base_name
+                    obj.name = new_base_name
+                    
+                    # Update collisions
+                    for scene_obj in context.scene.objects:
+                        if scene_obj.type == 'MESH':
+                            for prefix in col_prefixes:
+                                if scene_obj.name.startswith(prefix) and base_name in scene_obj.name:
+                                    scene_obj.name = scene_obj.name.replace(prefix + base_name, prefix + new_base_name, 1)
+                                    break
+                                    
+                    # Update LODs
+                    for child in obj.children:
+                        if child.type == 'MESH' and "_LOD" in child.name:
+                            child.name = child.name.replace(base_name, new_base_name, 1)
+
                 # Deselect all
                 bpy.ops.object.select_all(action='DESELECT')
                 

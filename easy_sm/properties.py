@@ -1,5 +1,48 @@
 import bpy
 
+def update_sm_prefix(self, context):
+    scene = context.scene
+    col_prefixes = ("UCX_", "UBX_", "USP_", "UCP_")
+    
+    for obj in context.selected_objects:
+        if obj.type != 'MESH':
+            continue
+            
+        base_name = obj.name
+        has_sm = base_name.startswith("SM_")
+        
+        if scene.ue_add_sm_prefix and not has_sm:
+            if base_name.startswith("SK_"):
+                continue
+            new_base_name = "SM_" + obj.name
+            obj.name = new_base_name
+            
+            for scene_obj in scene.objects:
+                if scene_obj.type == 'MESH':
+                    for prefix in col_prefixes:
+                        if scene_obj.name.startswith(prefix) and base_name in scene_obj.name:
+                            scene_obj.name = scene_obj.name.replace(prefix + base_name, prefix + new_base_name, 1)
+                            break
+                            
+            for child in obj.children:
+                if child.type == 'MESH' and "_LOD" in child.name:
+                    child.name = child.name.replace(base_name, new_base_name, 1)
+                    
+        elif not scene.ue_add_sm_prefix and has_sm:
+            new_base_name = obj.name[3:]
+            obj.name = new_base_name
+            
+            for scene_obj in scene.objects:
+                if scene_obj.type == 'MESH':
+                    for prefix in col_prefixes:
+                        if scene_obj.name.startswith(prefix) and base_name in scene_obj.name:
+                            scene_obj.name = scene_obj.name.replace(prefix + base_name, prefix + new_base_name, 1)
+                            break
+                            
+            for child in obj.children:
+                if child.type == 'MESH' and "_LOD" in child.name:
+                    child.name = child.name.replace(base_name, new_base_name, 1)
+
 def register():
     bpy.types.Scene.ue_export_path = bpy.props.StringProperty(
         name="Path",
@@ -8,6 +51,12 @@ def register():
         subtype='DIR_PATH'
     )
     
+    bpy.types.Scene.ue_add_sm_prefix = bpy.props.BoolProperty(
+        name="Add SM_ Prefix",
+        description="Add 'SM_' prefix to selected meshes, LODs, and collisions",
+        default=False,
+        update=update_sm_prefix
+    )
 
 
     bpy.types.Scene.ue_apply_transforms = bpy.props.BoolProperty(
@@ -98,3 +147,4 @@ def unregister():
     del bpy.types.Scene.ue_col_decimate_ratio
     del bpy.types.Scene.ue_lod_count
     del bpy.types.Scene.ue_lod_step
+    del bpy.types.Scene.ue_add_sm_prefix

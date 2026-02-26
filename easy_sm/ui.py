@@ -7,30 +7,37 @@ class UE_EXPORT_PT_Panel(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = 'Easy SM'
+    bl_order = 3
 
     def draw(self, context):
         layout = self.layout
         scene = context.scene
 
-        layout.label(text="Export Settings:")
-        row = layout.row()
-        row.prop(scene, "ue_export_path")
+        # Export Path Box
+        box = layout.box()
+        box.label(text="Export Settings:", icon='FILE_FOLDER')
+        row = box.row()
+        row.prop(scene, "ue_export_path", text="")
         
         layout.separator()
         
-        layout.label(text="Actions:")
-        row = layout.row()
-        row.prop(scene, "ue_apply_transforms", text="Apply Transforms")
-        row = layout.row()
-        row.prop(scene, "ue_center_to_origin", text="Center to Origin")
-        row = layout.row()
-        row.prop(scene, "ue_export_textures", text="Export Textures")
-        row = layout.row()
-        row.prop(scene, "ue_export_collisions", text="Export Collisions")
+        # Actions Box
+        box = layout.box()
+        box.label(text="Actions:", icon='MODIFIER')
+        
+        col = box.column(align=True)
+        col.prop(scene, "ue_add_sm_prefix", text="Add SM_ Prefix")
+        col.prop(scene, "ue_apply_transforms", text="Apply Transforms")
+        col.prop(scene, "ue_center_to_origin", text="Center to Origin")
+        col.prop(scene, "ue_export_textures", text="Export Textures")
+        col.prop(scene, "ue_export_collisions", text="Export Collisions")
 
         layout.separator()
 
-        layout.operator("export_scene.ue_batch", text="Export Selected to UE", icon='EXPORT')
+        # Big Export Button
+        row = layout.row()
+        row.scale_y = 1.5
+        row.operator("export_scene.ue_batch", text="Export Selected to UE", icon='EXPORT')
 
 class UE_COLLISION_PT_Panel(bpy.types.Panel):
     """Creates a Panel in the 3D Viewport sidebar"""
@@ -39,27 +46,29 @@ class UE_COLLISION_PT_Panel(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = 'Easy SM'
+    bl_order = 1
 
     def draw(self, context):
         layout = self.layout
         scene = context.scene
 
-        layout.label(text="Collision Generator:")
+        box = layout.box()
+        box.label(text="Collision Generator:", icon='MESH_CUBE')
         
-        row = layout.row()
-        row.prop(scene, "ue_col_prefix", text="Prefix")
+        col = box.column(align=True)
+        col.prop(scene, "ue_col_prefix", text="Prefix")
         
         if scene.ue_col_prefix == 'UCX':
-            row = layout.row()
-            row.prop(scene, "ue_col_decimate_ratio", text="Decimate Ratio")
+            col.prop(scene, "ue_col_decimate_ratio", text="Decimate Ratio")
 
-        row = layout.row()
-        row.prop(scene, "ue_col_suffix", text="Add Incremental Suffix")
-        row = layout.row()
-        row.prop(scene, "ue_col_separate_parts", text="Separate by Loose Parts")
+        col.prop(scene, "ue_col_suffix", text="Add Incremental Suffix")
+        col.prop(scene, "ue_col_separate_parts", text="Separate by Loose Parts")
 
         layout.separator()
-        layout.operator("object.ue_generate_collisions", text="Generate Collisions", icon='MESH_CUBE')
+        
+        row = layout.row()
+        row.scale_y = 1.5
+        row.operator("object.ue_generate_collisions", text="Generate Collisions", icon='MESH_CUBE')
 
 class UE_LOD_PT_Panel(bpy.types.Panel):
     """Creates a LOD Panel in the 3D Viewport sidebar"""
@@ -68,25 +77,29 @@ class UE_LOD_PT_Panel(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = 'Easy SM'
+    bl_order = 2
 
     def draw(self, context):
         layout = self.layout
         scene = context.scene
 
-        layout.label(text="LOD Settings:")
+        box = layout.box()
+        box.label(text="LOD Settings:", icon='MOD_DECIM')
         
-        row = layout.row()
-        row.prop(scene, "ue_lod_count", text="Number of LODs")
-        row = layout.row()
-        row.prop(scene, "ue_lod_step", text="Decimate Step")
+        col = box.column(align=True)
+        col.prop(scene, "ue_lod_count", text="Number of LODs")
+        col.prop(scene, "ue_lod_step", text="Decimate Step")
         
         layout.separator()
-        layout.operator("object.ue_generate_lods", text="Generate LODs", icon='MOD_DECIM')
+        
+        row = layout.row()
+        row.scale_y = 1.5
+        row.operator("object.ue_generate_lods", text="Generate LODs", icon='MOD_DECIM')
 
 classes = (
-    UE_EXPORT_PT_Panel,
     UE_COLLISION_PT_Panel,
     UE_LOD_PT_Panel,
+    UE_EXPORT_PT_Panel,
 )
 
 def register():
